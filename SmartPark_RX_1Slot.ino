@@ -58,7 +58,7 @@ const char* HIVEMQ_TOPIC = "parking/slot1/status";
 const char* AIO_HOST = "io.adafruit.com";
 const int   AIO_PORT = 1883;
 const char* AIO_USER = "jay6025";
-const char* AIO_KEY  = "aio_ZEYn128zT3WUzvBFcs84XI203Rpa";
+const char* AIO_KEY  = "aio_GYJA23SnfV46jmefChbCYD18UFdE";
 
 // Publish interval — 5 feeds × 1 per 16s = 18.75 pts/min (safe under 30/min)
 const uint32_t AIO_INTERVAL = 16000;
