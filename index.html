@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParkIQ — Book Your Slot</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0b0f0e;
+    --surface: #111815;
+    --card:    #161d1b;
+    --border:  #1f2e2a;
+    --accent:  #00e5a0;
+    --accent2: #00b87a;
+    --danger:  #e84545;
+    --text:    #dde8e4;
+    --muted:   #5a7a70;
+    --font-h:  'Bebas Neue', sans-serif;
+    --font-b:  'DM Sans', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-b);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 48px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      repeating-linear-gradient(0deg,   transparent, transparent 39px, rgba(0,229,160,0.025) 40px),
+      repeating-linear-gradient(90deg,  transparent, transparent 39px, rgba(0,229,160,0.025) 40px);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center; margin-bottom: 28px;
+    position: relative; z-index: 1;
+    animation: fadeDown 0.6s ease both;
+  }
+  .logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
+  .logo-icon {
+    width: 44px; height: 44px; border: 2px solid var(--accent);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 22px; height: 22px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .logo h1 { font-family: var(--font-h); font-size: 48px; letter-spacing: 4px; color: var(--text); line-height: 1; }
+  .logo h1 span { color: var(--accent); }
+  .tagline { font-size: 11px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; }
+
+  /* ── SLOT SELECTOR ── */
+  .slot-selector {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    width: 100%; max-width: 500px; margin-bottom: 20px;
+    position: relative; z-index: 1;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .slot-btn {
+    padding: 18px 12px; border-radius: 12px;
+    border: 2px solid var(--border); background: var(--card);
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .slot-btn:hover { border-color: var(--muted); }
+  .slot-btn.active { border-color: var(--accent); background: rgba(0,229,160,0.07); }
+  .slot-btn .snum { font-family: var(--font-h); font-size: 34px; letter-spacing: 2px; color: var(--muted); line-height: 1; display: block; }
+  .slot-btn.active .snum { color: var(--accent); }
+  .slot-btn .slabel { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 4px; display: block; }
+  .slot-btn.active .slabel { color: var(--accent2); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; width: 100%; max-width: 500px;
+    padding: 32px 28px; position: relative; z-index: 1;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.35;
+  }
+
+  /* ── TOKEN BOX ── */
+  .token-box {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(0,229,160,0.06); border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 28px;
+  }
+  .token-box .tk-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .token-box .tk-value { font-family: var(--font-h); font-size: 30px; letter-spacing: 4px; color: var(--accent); }
+  .token-box .tk-slot  { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .token-box svg { width: 30px; height: 30px; stroke: rgba(0,229,160,0.35); fill: none; stroke-width: 1.5; flex-shrink: 0; }
+
+  /* ── SECTION LABEL ── */
+  .sec-label {
+    font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── FORM ── */
+  .form-row { margin-bottom: 16px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  label { display: block; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  input, select {
+    width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: 10px; padding: 13px 15px; color: var(--text);
+    font-family: var(--font-b); font-size: 14px; outline: none;
+    transition: border-color 0.2s, background 0.2s; appearance: none;
+  }
+  input:focus, select:focus { border-color: var(--accent2); background: rgba(0,229,160,0.04); }
+  input::placeholder { color: var(--muted); }
+  select option { background: #161d1b; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+  /* ── BUTTON ── */
+  .btn {
+    width: 100%; padding: 17px; border: none; border-radius: 12px;
+    background: var(--accent); color: #0b0f0e;
+    font-family: var(--font-h); font-size: 20px; letter-spacing: 3px;
+    cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn:hover:not(:disabled) { opacity: 0.88; }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn .spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(11,15,14,0.25); border-top-color: #0b0f0e; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto; }
+  .btn.loading .btn-text { display: none; }
+  .btn.loading .spinner  { display: block; }
+
+  /* ── STATUS ── */
+  .status { display: none; margin-top: 16px; padding: 16px 18px; border-radius: 12px; font-size: 13px; line-height: 1.65; white-space: pre-line; font-weight: 500; }
+  .status.ok  { display: block; background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.25); color: var(--accent); }
+  .status.err { display: block; background: rgba(232,69,69,0.08);  border: 1px solid rgba(232,69,69,0.3);  color: var(--danger); }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 28px; text-align: center; font-size: 11px;
+    color: var(--muted); letter-spacing: 1px;
+    position: relative; z-index: 1;
+    animation: fadeUp 0.6s 0.35s ease both;
+  }
+  .footer span { color: var(--accent2); }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
+  @keyframes spin     { to   { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <h1>PARK<span>IQ</span></h1>
+  </div>
+  <p class="tagline">Smart Parking · NIELIT Campus</p>
+</div>
+
+<!-- SLOT SELECTOR -->
+<div class="slot-selector">
+  <div class="slot-btn active" id="btn-s1" onclick="selectSlot(1)">
+    <span class="snum">S1</span>
+    <span class="slabel">Slot 1</span>
+  </div>
+  <div class="slot-btn" id="btn-s2" onclick="selectSlot(2)">
+    <span class="snum">S2</span>
+    <span class="slabel">Slot 2</span>
+  </div>
+</div>
+
+<!-- MAIN CARD -->
+<div class="card">
+
+  <div class="token-box">
+    <div>
+      <div class="tk-label">Booking Token</div>
+      <div class="tk-value" id="tokenDisplay">SP-????</div>
+      <div class="tk-slot"  id="slotDisplay">Slot 1 selected</div>
+    </div>
+    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+  </div>
+
+  <div class="sec-label">Your details</div>
+
+  <div class="form-row">
+    <label>Full Name</label>
+    <input type="text" id="name" placeholder="e.g. Arjun Kumar" autocomplete="off">
+  </div>
+
+  <div class="form-row">
+    <label>Vehicle Number</label>
+    <input type="text" id="vehicle" placeholder="e.g. KL07AB1234" autocomplete="off">
+  </div>
+
+  <hr class="divider">
+  <div class="sec-label">Booking details</div>
+
+  <div class="form-grid">
+    <div>
+      <label>Duration</label>
+      <select id="duration">
+        <option value="30min">30 min</option>
+        <option value="1hr" selected>1 Hour</option>
+        <option value="2hr">2 Hours</option>
+        <option value="3hr">3 Hours</option>
+        <option value="4hr">4 Hours</option>
+      </select>
+    </div>
+    <div>
+      <label>Arrival Time</label>
+      <input type="time" id="arrivalTime">
+    </div>
+  </div>
+
+  <button class="btn" id="bookBtn" onclick="bookSlot()">
+    <span class="btn-text">BOOK SLOT</span>
+    <div class="spinner"></div>
+  </button>
+
+  <div class="status" id="statusMsg"></div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  ParkIQ · ESP32 + LoRa + <span>Adafruit IO</span> · NIELIT Calicut
+</div>
+
+<script>
+  const AIO_USER = "jay6025";
+  const AIO_KEY  = "aio_IZHr586uhr5zRFJuKX32NLAu06sn";
+  const AIO_FEED = "booking-status";
+
+  let selectedSlot = 1;
+  let currentToken = genToken();
+
+  document.getElementById("tokenDisplay").textContent = currentToken;
+
+  // Default arrival = now + 15min
+  const d = new Date();
+  d.setMinutes(d.getMinutes() + 15);
+  document.getElementById("arrivalTime").value =
+    String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+
+  document.getElementById("vehicle").addEventListener("input", function() {
+    this.value = this.value.toUpperCase();
+  });
+
+  function genToken() {
+    return "SP-" + Math.floor(1000 + Math.random() * 9000);
+  }
+
+  function selectSlot(n) {
+    selectedSlot = n;
+    document.getElementById("btn-s1").classList.toggle("active", n === 1);
+    document.getElementById("btn-s2").classList.toggle("active", n === 2);
+    document.getElementById("slotDisplay").textContent = "Slot " + n + " selected";
+    clearStatus();
+  }
+
+  async function bookSlot() {
+    const name     = document.getElementById("name").value.trim();
+    const vehicle  = document.getElementById("vehicle").value.trim();
+    const duration = document.getElementById("duration").value;
+    const time     = document.getElementById("arrivalTime").value;
+
+    if (!name)           { showStatus("err", "Please enter your name."); return; }
+    if (!vehicle)        { showStatus("err", "Please enter your vehicle number."); return; }
+    if (vehicle.length < 4) { showStatus("err", "Enter a valid vehicle number."); return; }
+    if (!time)           { showStatus("err", "Please select arrival time."); return; }
+
+    // Exact format ESP32 expects
+    const msg = `Token:${currentToken}|Slot:${selectedSlot}|Name:${name}|Vehicle:${vehicle}|Dur:${duration}|Time:${time}`;
+
+    const btn = document.getElementById("bookBtn");
+    btn.classList.add("loading");
+    btn.disabled = true;
+    clearStatus();
+
+    try {
+      const res = await fetch(
+        `https://io.adafruit.com/api/v2/${AIO_USER}/feeds/${AIO_FEED}/data`,
+        {
+          method: "POST",
+          headers: { "X-AIO-Key": AIO_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ value: msg })
+        }
+      );
+
+      if (res.ok) {
+        showStatus("ok",
+          `Booking confirmed!\n\nToken : ${currentToken}\nSlot  : ${selectedSlot}\nName  : ${name}\nVehicle: ${vehicle}\nDuration: ${duration}\nArrival : ${time}\n\nShow this token at the entrance gate.`
+        );
+        setTimeout(() => {
+          currentToken = genToken();
+          document.getElementById("tokenDisplay").textContent = currentToken;
+        }, 1500);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showStatus("err", "Booking failed: " + (err.error || "Error " + res.status));
+      }
+    } catch (e) {
+      showStatus("err", "Network error. Check internet and try again.");
+      console.error("[ParkIQ]", e);
+    }
+
+    btn.classList.remove("loading");
+    btn.disabled = false;
+  }
+
+  function showStatus(type, msg) {
+    const el = document.getElementById("statusMsg");
+    el.className = "status " + type;
+    el.textContent = msg;
+  }
+
+  function clearStatus() {
+    const el = document.getElementById("statusMsg");
+    el.className = "status";
+    el.textContent = "";
+  }
+</script>
+
+</body>
+</html>
